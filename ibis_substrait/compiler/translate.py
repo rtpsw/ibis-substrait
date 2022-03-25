@@ -107,7 +107,9 @@ def _decimal(dtype: dt.Decimal) -> stt.Type:
 def _timestamp(dtype: dt.Timestamp) -> stt.Type:
     nullability = _nullability(dtype)
     if dtype.timezone is not None:
-        return stt.Type(timestamp_tz=stt.Type.TimestampTZ(nullability=nullability))
+        return stt.Type(
+            timestamp_tz=stt.Type.TimestampTZ(tz=dtype.timezone, nullability=nullability)
+        )
     return stt.Type(timestamp=stt.Type.Timestamp(nullability=nullability))
 
 
@@ -593,10 +595,24 @@ def _path_type_of(name : str | None) -> str:
         return "uri_path_glob" if glob.has_magic(name) else "uri_path"
 
 
-def _format_of(name : str | None):
-    return (stalg.ReadRel.LocalFiles.FileOrFiles.FileFormat.FILE_FORMAT_PARQUET
-            if name.endswith(".parquet")
-            else stalg.ReadRel.LocalFiles.FileOrFiles.FileFormat.FILE_FORMAT_UNSPECIFIED)
+def _read_format_of(
+    name : str | None
+):
+    return (
+        stalg.ReadRel.LocalFiles.FileOrFiles.FileFormat.FILE_FORMAT_PARQUET
+        if name is not None and name.endswith(".parquet")
+        else stalg.ReadRel.LocalFiles.FileOrFiles.FileFormat.FILE_FORMAT_UNSPECIFIED
+    )
+
+
+def _write_format_of(
+    name : str | None
+):
+    return (
+        stalg.WriteRel.LocalFiles.FileOrFiles.FileFormat.FILE_FORMAT_PARQUET
+        if name is not None and name.endswith(".parquet")
+        else stalg.WriteRel.LocalFiles.FileOrFiles.FileFormat.FILE_FORMAT_UNSPECIFIED
+    )
 
 
 @translate.register(ops.LocalTable)
@@ -611,7 +627,29 @@ def local_table(
             local_files=stalg.ReadRel.LocalFiles(
                 items=[stalg.ReadRel.LocalFiles.FileOrFiles(**{
                     _path_type_of(op.name): op.name,
-                    "format": _format_of(op.name),
+                    "format": _read_format_of(op.name),
+                })]
+            ),
+        )
+    )
+
+
+@translate.register(ops.LocalWrite)
+def local_write(
+    op: ops.LocalWrite, expr: ir.TableExpr, compiler: SubstraitCompiler, **kwargs: Any
+) -> stalg.Rel:
+    return stalg.Rel(
+        write=stalg.WriteRel(
+            input=translate(
+                op.table,
+                compiler,
+                child_rel_field_offsets=_get_child_relation_field_offsets(op.table),
+                **kwargs
+            ),
+            local_files=stalg.WriteRel.LocalFiles(
+                items=[stalg.WriteRel.LocalFiles.FileOrFiles(**{
+                    _path_type_of(op.name): op.name,
+                    "format": _write_format_of(op.name),
                 })]
             ),
         )

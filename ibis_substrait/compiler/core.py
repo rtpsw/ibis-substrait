@@ -21,10 +21,12 @@ def which_one_of(message: msg.Message, oneof_name: str) -> tuple[str, Any]:
 
 
 class SubstraitCompiler:
-    def __init__(self) -> None:
+    def __init__(self, uri: str | None = None) -> None:
         """Initialize the compiler."""
         # start at id 1 because 0 is the default proto value for the type
-        self.extension_uri = ste.SimpleExtensionURI(extension_uri_anchor=1)
+        self.extension_uri = ste.SimpleExtensionURI(
+            extension_uri_anchor=1, uri=uri
+        )
         self.function_extensions: dict[
             tuple[Hashable, ...],
             ste.SimpleExtensionDeclaration.ExtensionFunction,
@@ -76,7 +78,7 @@ class SubstraitCompiler:
         """Construct a Substrait plan from an ibis table expression."""
         from .translate import translate
 
-        expr_schema = expr.materialize().schema()
+        expr_schema = expr.schema()
         rel = stp.PlanRel(
             root=stalg.RelRoot(
                 input=translate(expr.op(), expr, self),
