@@ -634,6 +634,27 @@ def local_table(
     )
 
 
+@translate.register(ops.AsOfMerge)
+def as_of_merge(
+    op: ops.AsOfMerge, expr: ir.TableExpr, compiler: SubstraitCompiler, **kwargs: Any
+) -> stalg.Rel:
+    return stalg.Rel(
+        as_of_merge=stalg.AsOfMergeRel(
+            inputs=[translate(
+                table,
+                compiler,
+                child_rel_field_offsets=_get_child_relation_field_offsets(table),
+                **kwargs
+            ) for table in op.tables],
+            v1=stalg.AsOfMergeRel.AsOfMergeV1(
+                key_column=op.key_column,
+                time_column=op.time_column,
+                tolerance=op.tolerance,
+            ),
+        )
+    )
+
+
 @translate.register(ops.LocalWrite)
 def local_write(
     op: ops.LocalWrite, expr: ir.TableExpr, compiler: SubstraitCompiler, **kwargs: Any

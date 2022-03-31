@@ -270,6 +270,22 @@ message ExtensionMultiRel {
   google.protobuf.Any detail = 3;
 }
 
+message AsOfMergeRel {
+  RelCommon common = 1;
+  repeated Rel inputs = 2;
+  oneof version {
+    AsOfMergeV1 v1 = 3;
+  }
+
+  message AsOfMergeV1 {
+    string key_column = 1;
+    string time_column = 2;
+    int64 tolerance = 3;
+  }
+
+  substrait.extensions.AdvancedExtension advanced_extension = 10;
+}
+
 // A relation with output field names.
 //
 // This is for use at the root of a `Rel` tree.
@@ -295,6 +311,7 @@ message Rel {
     ExtensionLeafRel extension_leaf = 11;
     CrossRel cross = 12;
     WriteRel write = 13;
+    AsOfMergeRel as_of_merge = 14;
   }
 }
 
@@ -604,7 +621,7 @@ message Expression {
     }
   }
 
-  // A reference to an inner part of a complex object. Can reference reference a
+  // A reference to an inner part of a complex object. Can reference a
   // single element or a masked version of elements
   message FieldReference {
 
@@ -616,7 +633,7 @@ message Expression {
     }
 
     // Whether this reference has an origin of a root struct or is based on the
-    // ouput of an expression. When this is a RootReference and direct_reference
+    // output of an expression. When this is a RootReference and direct_reference
     // above is used, the direct_reference must be of a type StructField.
     oneof root_type {
       Expression expression = 3;
