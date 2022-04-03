@@ -915,6 +915,57 @@ class ExtensionMultiRel(google.protobuf.message.Message):
         ...
 global___ExtensionMultiRel = ExtensionMultiRel
 
+class AsOfMergeRel(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    class AsOfMergeV1(google.protobuf.message.Message):
+        DESCRIPTOR: google.protobuf.descriptor.Descriptor
+        KEY_COLUMN_FIELD_NUMBER: builtins.int
+        TIME_COLUMN_FIELD_NUMBER: builtins.int
+        TOLERANCE_FIELD_NUMBER: builtins.int
+        key_column: typing.Text
+        time_column: typing.Text
+        tolerance: builtins.int
+
+        def __init__(self, *, key_column: typing.Text=..., time_column: typing.Text=..., tolerance: builtins.int=...) -> None:
+            ...
+
+        def ClearField(self, field_name: typing_extensions.Literal['key_column', b'key_column', 'time_column', b'time_column', 'tolerance', b'tolerance']) -> None:
+            ...
+    COMMON_FIELD_NUMBER: builtins.int
+    INPUTS_FIELD_NUMBER: builtins.int
+    V1_FIELD_NUMBER: builtins.int
+    ADVANCED_EXTENSION_FIELD_NUMBER: builtins.int
+
+    @property
+    def common(self) -> global___RelCommon:
+        ...
+
+    @property
+    def inputs(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___Rel]:
+        ...
+
+    @property
+    def v1(self) -> global___AsOfMergeRel.AsOfMergeV1:
+        ...
+
+    @property
+    def advanced_extension(self) -> substrait.extensions.extensions_pb2.AdvancedExtension:
+        ...
+
+    def __init__(self, *, common: typing.Optional[global___RelCommon]=..., inputs: typing.Optional[typing.Iterable[global___Rel]]=..., v1: typing.Optional[global___AsOfMergeRel.AsOfMergeV1]=..., advanced_extension: typing.Optional[substrait.extensions.extensions_pb2.AdvancedExtension]=...) -> None:
+        ...
+
+    def HasField(self, field_name: typing_extensions.Literal['advanced_extension', b'advanced_extension', 'common', b'common', 'v1', b'v1', 'version', b'version']) -> builtins.bool:
+        ...
+
+    def ClearField(self, field_name: typing_extensions.Literal['advanced_extension', b'advanced_extension', 'common', b'common', 'inputs', b'inputs', 'v1', b'v1', 'version', b'version']) -> None:
+        ...
+
+    def WhichOneof(self, oneof_group: typing_extensions.Literal['version', b'version']) -> typing.Optional[typing_extensions.Literal['v1']]:
+        ...
+global___AsOfMergeRel = AsOfMergeRel
+
 class RelRoot(google.protobuf.message.Message):
     """A relation with output field names.
 
@@ -959,6 +1010,7 @@ class Rel(google.protobuf.message.Message):
     EXTENSION_LEAF_FIELD_NUMBER: builtins.int
     CROSS_FIELD_NUMBER: builtins.int
     WRITE_FIELD_NUMBER: builtins.int
+    AS_OF_MERGE_FIELD_NUMBER: builtins.int
 
     @property
     def read(self) -> global___ReadRel:
@@ -1012,16 +1064,20 @@ class Rel(google.protobuf.message.Message):
     def write(self) -> global___WriteRel:
         ...
 
-    def __init__(self, *, read: typing.Optional[global___ReadRel]=..., filter: typing.Optional[global___FilterRel]=..., fetch: typing.Optional[global___FetchRel]=..., aggregate: typing.Optional[global___AggregateRel]=..., sort: typing.Optional[global___SortRel]=..., join: typing.Optional[global___JoinRel]=..., project: typing.Optional[global___ProjectRel]=..., set: typing.Optional[global___SetRel]=..., extension_single: typing.Optional[global___ExtensionSingleRel]=..., extension_multi: typing.Optional[global___ExtensionMultiRel]=..., extension_leaf: typing.Optional[global___ExtensionLeafRel]=..., cross: typing.Optional[global___CrossRel]=..., write: typing.Optional[global___WriteRel]=...) -> None:
+    @property
+    def as_of_merge(self) -> global___AsOfMergeRel:
         ...
 
-    def HasField(self, field_name: typing_extensions.Literal['aggregate', b'aggregate', 'cross', b'cross', 'extension_leaf', b'extension_leaf', 'extension_multi', b'extension_multi', 'extension_single', b'extension_single', 'fetch', b'fetch', 'filter', b'filter', 'join', b'join', 'project', b'project', 'read', b'read', 'rel_type', b'rel_type', 'set', b'set', 'sort', b'sort', 'write', b'write']) -> builtins.bool:
+    def __init__(self, *, read: typing.Optional[global___ReadRel]=..., filter: typing.Optional[global___FilterRel]=..., fetch: typing.Optional[global___FetchRel]=..., aggregate: typing.Optional[global___AggregateRel]=..., sort: typing.Optional[global___SortRel]=..., join: typing.Optional[global___JoinRel]=..., project: typing.Optional[global___ProjectRel]=..., set: typing.Optional[global___SetRel]=..., extension_single: typing.Optional[global___ExtensionSingleRel]=..., extension_multi: typing.Optional[global___ExtensionMultiRel]=..., extension_leaf: typing.Optional[global___ExtensionLeafRel]=..., cross: typing.Optional[global___CrossRel]=..., write: typing.Optional[global___WriteRel]=..., as_of_merge: typing.Optional[global___AsOfMergeRel]=...) -> None:
         ...
 
-    def ClearField(self, field_name: typing_extensions.Literal['aggregate', b'aggregate', 'cross', b'cross', 'extension_leaf', b'extension_leaf', 'extension_multi', b'extension_multi', 'extension_single', b'extension_single', 'fetch', b'fetch', 'filter', b'filter', 'join', b'join', 'project', b'project', 'read', b'read', 'rel_type', b'rel_type', 'set', b'set', 'sort', b'sort', 'write', b'write']) -> None:
+    def HasField(self, field_name: typing_extensions.Literal['aggregate', b'aggregate', 'as_of_merge', b'as_of_merge', 'cross', b'cross', 'extension_leaf', b'extension_leaf', 'extension_multi', b'extension_multi', 'extension_single', b'extension_single', 'fetch', b'fetch', 'filter', b'filter', 'join', b'join', 'project', b'project', 'read', b'read', 'rel_type', b'rel_type', 'set', b'set', 'sort', b'sort', 'write', b'write']) -> builtins.bool:
         ...
 
-    def WhichOneof(self, oneof_group: typing_extensions.Literal['rel_type', b'rel_type']) -> typing.Optional[typing_extensions.Literal['read', 'filter', 'fetch', 'aggregate', 'sort', 'join', 'project', 'set', 'extension_single', 'extension_multi', 'extension_leaf', 'cross', 'write']]:
+    def ClearField(self, field_name: typing_extensions.Literal['aggregate', b'aggregate', 'as_of_merge', b'as_of_merge', 'cross', b'cross', 'extension_leaf', b'extension_leaf', 'extension_multi', b'extension_multi', 'extension_single', b'extension_single', 'fetch', b'fetch', 'filter', b'filter', 'join', b'join', 'project', b'project', 'read', b'read', 'rel_type', b'rel_type', 'set', b'set', 'sort', b'sort', 'write', b'write']) -> None:
+        ...
+
+    def WhichOneof(self, oneof_group: typing_extensions.Literal['rel_type', b'rel_type']) -> typing.Optional[typing_extensions.Literal['read', 'filter', 'fetch', 'aggregate', 'sort', 'join', 'project', 'set', 'extension_single', 'extension_multi', 'extension_leaf', 'cross', 'write', 'as_of_merge']]:
         ...
 global___Rel = Rel
 
@@ -1961,7 +2017,7 @@ class Expression(google.protobuf.message.Message):
             ...
 
     class FieldReference(google.protobuf.message.Message):
-        """A reference to an inner part of a complex object. Can reference reference a
+        """A reference to an inner part of a complex object. Can reference a
         single element or a masked version of elements
         """
         DESCRIPTOR: google.protobuf.descriptor.Descriptor
