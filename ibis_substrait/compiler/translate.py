@@ -740,6 +740,11 @@ def selection(
             )
         )
 
+    selections = [
+        x
+        for s in op.selections
+        for x in (s.get_columns(s.columns) if isinstance(s, ir.TableExpr) else [s])
+    ] if op.expand_table.op().value == True else op.selections
     # projection
     if op.selections:
         relation = stalg.Rel(
@@ -752,7 +757,7 @@ def selection(
                         child_rel_field_offsets=child_rel_field_offsets,
                         **kwargs,
                     )
-                    for selection in op.selections
+                    for selection in selections
                 ],
             )
         )
