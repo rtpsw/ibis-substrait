@@ -13,7 +13,7 @@ import glob
 import itertools
 import operator
 import uuid
-from typing import Any, Mapping, MutableMapping, Sequence, TypeVar
+from typing import Any, Dict, Mapping, MutableMapping, Sequence, TypeVar
 
 import ibis.expr.datatypes as dt
 import ibis.expr.operations as ops
@@ -26,6 +26,15 @@ from ..proto.substrait import type_pb2 as stt
 from .core import SubstraitCompiler, _get_fields
 
 T = TypeVar("T")
+
+
+def _dict_add(
+    dict1: Dict[Any, Any],
+    dict2: Dict[Any, Any]
+) -> Dict[Any, Any]:
+    dict_both = dict1.copy()
+    dict_both.update(dict2)
+    return dict_both
 
 
 def _nullability(dtype: dt.DataType) -> stt.Type.Nullability.V:
@@ -108,7 +117,10 @@ def _timestamp(dtype: dt.Timestamp) -> stt.Type:
     nullability = _nullability(dtype)
     if dtype.timezone is not None:
         return stt.Type(
-            timestamp_tz=stt.Type.TimestampTZ(tz=dtype.timezone, nullability=nullability)
+            timestamp_tz=stt.Type.TimestampTZ(
+                tz=dtype.timezone,
+                nullability=nullability
+            )
         )
     return stt.Type(timestamp=stt.Type.Timestamp(nullability=nullability))
 
@@ -597,7 +609,7 @@ def _path_type_of(name : str | None) -> str:
 
 def _read_format_of(
     name : str | None
-):
+) -> int:
     return (
         stalg.ReadRel.LocalFiles.FileOrFiles.FileFormat.FILE_FORMAT_PARQUET
         if name is not None and name.endswith(".parquet")
@@ -607,7 +619,7 @@ def _read_format_of(
 
 def _write_format_of(
     name : str | None
-):
+) -> int:
     return (
         stalg.WriteRel.LocalFiles.FileOrFiles.FileFormat.FILE_FORMAT_PARQUET
         if name is not None and name.endswith(".parquet")
@@ -641,14 +653,16 @@ def as_of_merge(
     return stalg.Rel(
         as_of_merge=stalg.AsOfMergeRel(
             inputs=[translate(
-                table,
+                t,
                 compiler,
-                child_rel_field_offsets=_get_child_relation_field_offsets(table),
-                **kwargs
-            ) for table in op.tables],
+                **_dict_add(
+                    kwargs,
+                    {"child_rel_field_offsets": _get_child_relation_field_offsets(t)}
+                ),
+            ) for t in op.tables],
             v1=stalg.AsOfMergeRel.AsOfMergeV1(
-                key_column=op.key_column,
-                time_column=op.time_column,
+                key_fields=[translate(col, compiler) for col in op.key_columns],
+                time_fields=[translate(col, compiler) for col in op.time_columns],
                 tolerance=op.tolerance,
             ),
         )
@@ -744,7 +758,7 @@ def selection(
         x
         for s in op.selections
         for x in (s.get_columns(s.columns) if isinstance(s, ir.TableExpr) else [s])
-    ] if op.expand_table.op().value == True else op.selections
+    ] if op.expand_table.op().value is True else op.selections
     # projection
     if op.selections:
         relation = stalg.Rel(

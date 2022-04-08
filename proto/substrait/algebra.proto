@@ -278,8 +278,8 @@ message AsOfMergeRel {
   }
 
   message AsOfMergeV1 {
-    string key_column = 1;
-    string time_column = 2;
+    repeated Expression key_fields = 1;
+    repeated Expression time_fields = 2;
     int64 tolerance = 3;
   }
 

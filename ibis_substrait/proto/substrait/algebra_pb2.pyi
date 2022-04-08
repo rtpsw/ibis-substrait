@@ -920,17 +920,23 @@ class AsOfMergeRel(google.protobuf.message.Message):
 
     class AsOfMergeV1(google.protobuf.message.Message):
         DESCRIPTOR: google.protobuf.descriptor.Descriptor
-        KEY_COLUMN_FIELD_NUMBER: builtins.int
-        TIME_COLUMN_FIELD_NUMBER: builtins.int
+        KEY_FIELDS_FIELD_NUMBER: builtins.int
+        TIME_FIELDS_FIELD_NUMBER: builtins.int
         TOLERANCE_FIELD_NUMBER: builtins.int
-        key_column: typing.Text
-        time_column: typing.Text
-        tolerance: builtins.int
 
-        def __init__(self, *, key_column: typing.Text=..., time_column: typing.Text=..., tolerance: builtins.int=...) -> None:
+        @property
+        def key_fields(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___Expression]:
             ...
 
-        def ClearField(self, field_name: typing_extensions.Literal['key_column', b'key_column', 'time_column', b'time_column', 'tolerance', b'tolerance']) -> None:
+        @property
+        def time_fields(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___Expression]:
+            ...
+        tolerance: builtins.int
+
+        def __init__(self, *, key_fields: typing.Optional[typing.Iterable[global___Expression]]=..., time_fields: typing.Optional[typing.Iterable[global___Expression]]=..., tolerance: builtins.int=...) -> None:
+            ...
+
+        def ClearField(self, field_name: typing_extensions.Literal['key_fields', b'key_fields', 'time_fields', b'time_fields', 'tolerance', b'tolerance']) -> None:
             ...
     COMMON_FIELD_NUMBER: builtins.int
     INPUTS_FIELD_NUMBER: builtins.int
