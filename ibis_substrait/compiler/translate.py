@@ -758,7 +758,7 @@ def selection(
         x
         for s in op.selections
         for x in (s.get_columns(s.columns) if isinstance(s, ir.TableExpr) else [s])
-    ] if op.expand_table.op().value is True else op.selections
+    ]
     # projection
     if op.selections:
         relation = stalg.Rel(
